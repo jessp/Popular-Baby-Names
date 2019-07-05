@@ -2,6 +2,8 @@ import data from "./top_names_years.json";
 import chart from "./chart.js";
 import {set} from "d3-collection";
 import {select, selectAll} from "d3-selection";
+import css from './main.scss';
+
 
 //initial values
 let type = "all";

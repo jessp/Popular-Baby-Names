@@ -126,7 +126,8 @@ class Chart {
     let paths = d3.select(".mainGroup").selectAll(".path")
 	    .data(data, function(d){ return d["name"];});
 
-	paths.attr("d", function(d){
+	paths.transition().duration(300)
+		.attr("d", function(d){
 	      	return line(Object.keys(d.years).map(function(e){ return [d, e]}));
 	      });
 
@@ -139,7 +140,9 @@ class Chart {
 	    		return line(Object.keys(d.years).map(function(e){ return [d, e]}));
 	    	});
 
-	paths.exit().remove();
+	paths
+	.exit()
+	.remove();
 
 	this.drawSymbols("peak");
 	this.drawSymbols("trend");
@@ -169,7 +172,9 @@ class Chart {
 	.selectAll("." + group + "Symbol")
 	.data(this.data, function(d){ return d["name"];});
 
-	shapes.attr("transform", function(d){
+	shapes
+		.transition().duration(300)
+		.attr("transform", function(d){
 			return "translate(" + x(parseTime(d[attributes.accessor])) + "," + y(d["years"][d[attributes.accessor]]) + ")";
 		})
 
