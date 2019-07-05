@@ -33,13 +33,23 @@ class Chart {
     	.attr("class", "dot")
       .attr("display", "none");
 
-  this.dot.append("circle")
+  	this.dot.append("circle")
       .attr("r", 2.5);
 
-  this.dot.append("text")
+  	this.dot.append("text")
       .style("font", "10px sans-serif")
       .attr("text-anchor", "middle")
       .attr("y", -8);
+
+    this.peakGroup = this.group.append("g")
+    	.attr("class", "peakGroup")
+    	.attr("fill", "none")
+		.attr("stroke-width", 0.5);
+
+	this.trendGroup = this.group.append("g")
+    	.attr("class", "trendGroup")
+    	.attr("fill", "none")
+		.attr("stroke-width", 0.5);
 
     this.x = d3.scaleUtc()
     	.domain([this.parseTime(1950), this.parseTime(2018)])
@@ -50,6 +60,7 @@ class Chart {
 
 
     this.drawChart = this.drawChart.bind(this);
+    this.drawSymbols = this.drawSymbols.bind(this);
     this.hover = this.hover.bind(this);
     this.moved = this.moved.bind(this);
     this.entered = this.entered.bind(this);
@@ -61,6 +72,16 @@ class Chart {
     
     this.yAxis = this.svg.append("g").attr("class", "yAxis")
 	    .attr("transform", "translate(" + this.margin.left + ",0)");
+
+	d3.select("#trend").on("change", function(d){
+		let isChecked = d3.select(this).property("checked");
+		d3.select(".trendGroup").style("opacity", isChecked ? 1 : 0);
+	});
+
+	d3.select("#highest").on("change", function(d){
+		let isChecked = d3.select(this).property("checked");
+		d3.select(".peakGroup").style("opacity", isChecked ? 1 : 0);
+	});
 	    
     
   }
@@ -86,6 +107,8 @@ class Chart {
 	        .text(this.data.y))
 
   	let y = this.y;
+  	let x = this.x;
+  	let parseTime = this.parseTime;
 	let line = d3.line()
 	    .defined(function(d){
 	    	return d && d[0] && d[0]["years"] && d[0]["years"][d[1]];
@@ -100,7 +123,7 @@ class Chart {
 	    });
 
 
-    let paths = d3.select(".mainGroup").selectAll("path")
+    let paths = d3.select(".mainGroup").selectAll(".path")
 	    .data(data, function(d){ return d["name"];});
 
 	paths.attr("d", function(d){
@@ -109,6 +132,7 @@ class Chart {
 
 	paths.enter()
 	    .append("path")
+	    .attr("class", "path")
 	    	.attr("stroke", (d) => this.colours[d.type])
 	    	.style("mix-blend-mode", "multiply")
 	    	.attr("d", function(d){
@@ -117,8 +141,51 @@ class Chart {
 
 	paths.exit().remove();
 
-	    this.svg.call(this.hover, this.group);
+	this.drawSymbols("peak");
+	this.drawSymbols("trend");
 
+
+	this.svg.call(this.hover, this.group);
+
+  }
+
+  drawSymbols(group){
+  	let y = this.y;
+  	let x = this.x;
+  	let parseTime = this.parseTime;
+
+  	let attributes = group === "peak" ? {
+  		group: this.peakGroup,
+  		accessor: "max",
+  		"shape": d3.symbolCross
+  	} :
+  	{
+  		group: this.trendGroup,
+  		accessor: "max_increase",
+  		"shape": d3.symbolStar
+  	}
+
+  	let shapes = attributes.group
+	.selectAll("." + group + "Symbol")
+	.data(this.data, function(d){ return d["name"];});
+
+	shapes.attr("transform", function(d){
+			return "translate(" + x(parseTime(d[attributes.accessor])) + "," + y(d["years"][d[attributes.accessor]]) + ")";
+		})
+
+	shapes
+		.enter()
+		.append("path")
+		.attr("transform", function(d){
+			return "translate(" + x(parseTime(d[attributes.accessor])) + "," + y(d["years"][d[attributes.accessor]]) + ")";
+		})
+		.attr("class", group + "Symbol")
+		.attr("d", function(d) {
+			return d3.symbol().type(attributes.shape).size("12")()
+		})
+		.attr("stroke", (d) => this.colours[d.type]);
+
+	shapes.exit().remove();
   }
 
   hover(svg, path){
