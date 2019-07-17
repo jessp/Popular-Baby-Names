@@ -90,11 +90,15 @@ function filterMyData(){
 
 function updateSubtypes(e){
 	type = e;
+	
+	$("#subtype").dropdown("set selected", "all");
+
 	let select_sub_item = 
 			select("#subtype")
 			.select(".menu")
 			.selectAll(".item")
 			.remove();
+	subtype = "all";
 
 	if (type === "all" || type === "actor" || type === "unknown"){
 		let possible_subvalues = ["all"];
@@ -108,14 +112,13 @@ function updateSubtypes(e){
 			.attr("data-value", function(d){ return d})
 			.attr("class", "item")
 			.each(function(d){
-				let theThis = select(this);
-	
+				let theThis = select(this);	
 				theThis.append("span").html(function(d){ return d.split("_").join(" ").toUpperCase()});
 			})
 
 		select_sub_item.exit().remove();
 
-		select("#subtype").property("disabled", true);
+		select("#subtype").classed("disabled", true);
 
 	} else {
 		let filtered_subvalues = 
@@ -136,18 +139,23 @@ function updateSubtypes(e){
 			.attr("class", "item")
 			.each(function(d){
 				let theThis = select(this);
-	
 				theThis.append("span").html(function(d){ return d.split("_").join(" ").toUpperCase()});
 			})
 
-		select("#subtype").property("disabled", false);
+		select("#subtype").classed("disabled", false);
+
+		$("#subtype").dropdown({
+    		onChange: changeSubtypeDropdown
+		});
 
 	}
 
-	$("#subtype").dropdown({
-    	onChange: (e) => subtype = e
-	});
-	console.log(subtype);
+
 	filterMyData();
 
+}
+
+function changeSubtypeDropdown(e){
+	subtype = e;
+	filterMyData();
 }
