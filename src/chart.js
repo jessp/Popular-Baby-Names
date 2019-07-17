@@ -1,26 +1,21 @@
 import * as d3 from "d3";
 
 class Chart {
-  constructor() {
-  	this.width = 500;
-  	this.height = 300;
+  constructor(colours) {
+  	this.width = d3.select(".svgHolder").node().clientWidth;
+  	this.height = d3.select(".svgHolder").node().clientHeight;
   	this.data = [];
+  	this.display = true;
   	this.parseTime = d3.timeParse("%Y");
   	this.formatTime = d3.timeFormat("%Y");
   	this.numFormat = d3.format(",");
+  	this.percentFormat = d3.format(",.0%");
+  	this.selected = null;
   	this.margin = ({top: 20, right: 20, bottom: 30, left: 50});
     this.svg = 
     	d3.select("#theSvg")
     		.attr("viewBox", [0, 0, this.width, this.height]);
-    this.colours = {
-    	"athlete": "red",
-    	"notable_person": "blue",
-    	"reality_star": "green",
-    	"actor": "orange",
-    	"unknown": "purple",
-    	"music_related": "lime",
-    	"fictional_character": "turquoise"
-    }
+    this.colours = colours;
 
     this.group = this.svg.append("g")
     	.attr("class", "mainGroup")
@@ -82,41 +77,64 @@ class Chart {
 		let isChecked = d3.select(this).property("checked");
 		d3.select(".peakGroup").style("opacity", isChecked ? 1 : 0);
 	});
+
+	let setDisplay = (e) => this.display = e;
+	let drawChart = this.drawChart;
+	d3.select("#checkbox").on("change", function(d){
+		let isChecked = d3.select(this).property("checked");
+		setDisplay(!isChecked);
+		drawChart();
+	})
 	    
     
   }
 
   drawChart(data){
-  	this.data = data;
-
+  	if (data){
+  		this.data = data;
+  	}
+  	let selected = this.selected ? this.selected : "";
+  	let accessor = this.display ? "years" : "differences";
+  	let display = this.display;
   	let allValues =
-  		 data.map(function(d){ return Object.values(d.years)})
+  		 this.data.map(function(d){ return Object.values(display ? d.years : d.differences)})
   		.reduceRight(function(a, b) { return a.concat(b); }, []);
   	allValues = d3.set(allValues).values().map(e => parseInt(e));
+
 
   	this.y
   		.domain([0, d3.max(allValues)]).nice();
 
   	this.yAxis 
-  	.call(d3.axisLeft(this.y))
-	    .call(g => g.select(".domain").remove())
+  	.call(d3.axisLeft(this.y).tickFormat(display ? this.numFormat : this.percentFormat))
+	    .call(g => g.select(".domain").remove());
+
+	if (d3.select(".titleOfChart").node()){
+		d3.select(".titleOfChart").remove();
+	}
+
+	this.yAxis
 	    .call(g => g.select(".tick:last-of-type text").clone()
+	    	.attr("class", "titleOfChart")
 	        .attr("x", 3)
 	        .attr("text-anchor", "start")
 	        .attr("font-weight", "bold")
-	        .text(this.data.y))
+	        .text(display ? "Number of Babies Born" : "Percent Change Since Previous Year" ))
 
+  	
   	let y = this.y;
   	let x = this.x;
   	let parseTime = this.parseTime;
 	let line = d3.line()
 	    .defined(function(d){
-	    	return d && d[0] && d[0]["years"] && d[0]["years"][d[1]];
+	    	let accessor = display ? "years" : "differences";
+	    	return d && d[0] && d[0][accessor] && d[0][accessor][d[1]];
 	    })
 	    .x(d => this.x(this.parseTime(parseInt(d[1]))))
 	    .y(function(d){
-	    	if (d[0] && d[0]["years"][d[1]]){
-	    		return y(d[0]["years"][d[1]]);
+	    	let accessor = display ? "years" : "differences";
+	    	if (d[0] && d[0][accessor][d[1]]){
+	    		return y(d[0][accessor][d[1]]);
 	    	} else {
 	    		return y(0);
 	    	}
@@ -124,21 +142,50 @@ class Chart {
 
 
     let paths = d3.select(".mainGroup").selectAll(".path")
-	    .data(data, function(d){ return d["name"];});
+	    .data(this.data, function(d){ return d["name"];});
 
-	paths.transition().duration(300)
+	paths
+	.transition().duration(300)
 		.attr("d", function(d){
 	      	return line(Object.keys(d.years).map(function(e){ return [d, e]}));
-	      });
+	      })
+		.attr("stroke-width", function(d){ return selected["name"] === d["name"] ? 1 : null})
+		.style("opacity", function(d){
+			if (selected === ""){
+				return 1;
+			} else {
+				if (selected["name"] === d["name"]){
+					return 1;
+				} else {
+					return 0.25;
+				}
+			}
+		});
 
 	paths.enter()
 	    .append("path")
 	    .attr("class", "path")
 	    	.attr("stroke", (d) => this.colours[d.type])
+	    	.attr("stroke-width", function(d){ return selected["name"] === d["name"] ? 1 : null})
 	    	.style("mix-blend-mode", "multiply")
 	    	.attr("d", function(d){
-	    		return line(Object.keys(d.years).map(function(e){ return [d, e]}));
-	    	});
+	    		if (display){
+	    			return line(Object.keys(d.years).map(function(e){ return [d, e]}));
+	    		} else {
+	    			return line(Object.keys(d.differences).map(function(e){ return [d, e]}));
+	    		}
+	    	})
+	    	.style("opacity", function(d){
+				if (selected === ""){
+					return 1;
+				} else {
+					if (selected["name"] === d["name"]){
+						return 1;
+					} else {
+						return 0.25;
+					}
+				}
+			});
 
 	paths
 	.exit()
@@ -147,15 +194,35 @@ class Chart {
 	this.drawSymbols("peak");
 	this.drawSymbols("trend");
 
+	d3.select(".theExplainer p")
+		.html(selected["description"] ? selected["description"] : null);
+
+	if (selected !== ""){
+  		this.dot.attr("display", "initial");
+		this.dot
+			.attr("transform", "translate(" + this.x(this.parseTime(selected["max"])) + "," + this.y(selected[accessor][selected["max"]]) + ")");
+		this.dot
+			.select("text")
+			.text(selected.name + " - " + (this.display ? this.numFormat(selected[accessor][selected["max"]]) : this.percentFormat(selected[accessor][selected["max"]])));
+	} else {
+		this.dot.attr("display", "none");
+	}
 
 	this.svg.call(this.hover, this.group);
 
+  }
+
+  setSelected(name){
+  	this.selected = name;
+  	this.drawChart();
   }
 
   drawSymbols(group){
   	let y = this.y;
   	let x = this.x;
   	let parseTime = this.parseTime;
+  	let display = this.display;
+  	let selected = this.selected ? this.selected : "";
 
   	let attributes = group === "peak" ? {
   		group: this.peakGroup,
@@ -175,20 +242,42 @@ class Chart {
 	shapes
 		.transition().duration(300)
 		.attr("transform", function(d){
-			return "translate(" + x(parseTime(d[attributes.accessor])) + "," + y(d["years"][d[attributes.accessor]]) + ")";
+			return "translate(" + x(parseTime(d[attributes.accessor])) + "," + y(d[(display ? "years" : "differences")][d[attributes.accessor]]) + ")";
 		})
+		.style("opacity", function(d){
+			if (selected === ""){
+				return 1;
+			} else {
+				if (selected["name"] === d["name"]){
+					return 1;
+				} else {
+					return 0.25;
+				}
+			}
+		});
 
 	shapes
 		.enter()
 		.append("path")
 		.attr("transform", function(d){
-			return "translate(" + x(parseTime(d[attributes.accessor])) + "," + y(d["years"][d[attributes.accessor]]) + ")";
+			return "translate(" + x(parseTime(d[attributes.accessor])) + "," + y(d[(display ? "years" : "differences")][d[attributes.accessor]]) + ")";
 		})
 		.attr("class", group + "Symbol")
 		.attr("d", function(d) {
 			return d3.symbol().type(attributes.shape).size("12")()
 		})
-		.attr("stroke", (d) => this.colours[d.type]);
+		.attr("stroke", (d) => this.colours[d.type])
+		.style("opacity", function(d){
+			if (selected === ""){
+				return 1;
+			} else {
+				if (selected["name"] === d["name"]){
+					return 1;
+				} else {
+					return 0.25;
+				}
+			}
+		});
 
 	shapes.exit().remove();
   }
@@ -212,6 +301,7 @@ class Chart {
   }
 
     moved() {
+    	let accessor = this.display ? "years" : "differences";
     	let dates = d3.range(1950,2019);
 	    d3.event.preventDefault();
 	    const ym = this.y.invert(d3.event.layerY);
@@ -222,53 +312,98 @@ class Chart {
 	    const i = xm - dates[i0] > dates[i1] - xm ? i1 : i0;
 	    let newI = i + 1950;
 	    let existingData = this.data.filter(function(d){
-	    	return d.years[newI];
+	    	return d[accessor][newI];
 	    })
 	    let colours = this.colours;
+	    let selected = this.selected ? this.selected : "";
 	    if (existingData.length > 0){
 	    	const s = existingData.reduce(function(a,b){
-		    	let a1 = a.years[newI] ? a.years[newI] - ym : -1000000000;
-		    	let b1 = b.years[newI] ? b.years[newI] - ym : -1000000000;
+		    	let a1 = a[accessor][newI] ? a[accessor][newI] - ym : -1000000000;
+		    	let b1 = b[accessor][newI] ? b[accessor][newI] - ym : -1000000000;
 		    	return Math.abs(a1) < Math.abs(b1) ? a : b;
 	   		});
 
 		    d3.select(".mainGroup").selectAll("path")
 		    .attr("stroke", function(d){
-		    	return d["name"] === s["name"] ? colours[d.type] : "#ddd";
+		    	return (d["name"] === s["name"] || d["name"] === selected["name"]) ? colours[d.type] : "#ddd";
 		    })
 		    .attr("stroke-width", function(d){
-		    	return d["name"] === s["name"] ? 1 : null;
+		    	return (d["name"] === s["name"] || d["name"] === selected["name"]) ? 1 : null;
 		    })
-		    .filter(d => d["name"] === s["name"]).raise();
-		    this.dot.attr("transform", "translate(" + this.x(this.parseTime(dates[i])) + "," + this.y(s.years[newI]) + ")");
-		    this.dot.select("text").text(s.name + " - " + this.numFormat(s["years"][newI]));
+		    .filter(d => (d["name"] === s["name"] || d["name"] === selected["name"])).raise();
+		    this.dot.attr("display", "initial");
+		    this.dot
+		    	.attr("transform", "translate(" + this.x(this.parseTime(dates[i])) + "," + this.y(s[accessor][newI]) + ")");
+		    this.dot
+		    	.select("text")
+		    	.text(s.name + " - " + (this.display ? this.numFormat(s[accessor][newI]) : this.percentFormat(s[accessor][newI])));
 	    	d3.select(".theExplainer p").html(s.description);
 	    } else {
 	    	this.group.style("mix-blend-mode", "multiply")
 		    this.group.selectAll("path")
 		    .attr("stroke", (d) => this.colours[d.type])
-		    .attr("stroke-width", null);
-		    this.dot.attr("display", "none");
-		    d3.select(".theExplainer p").html(null);
+		    .attr("stroke-width", (d) => d["name"] === selected["name"] ? 1 : null);
+		    if (selected !== ""){
+		    	this.dot.attr("display", "initial");
+		    	this.dot
+		    		.attr("transform", "translate(" + this.x(this.parseTime(selected["max"])) + "," + this.y(selected[accessor][selected["max"]]) + ")");
+		    	this.dot
+		    		.select("text")
+		    		.text(s.name + " - " + (this.display ? this.numFormat(selected[accessor][selected["max"]]) : this.percentFormat(selected[accessor][selected["max"]])));
+		    } else {
+		    	this.dot.attr("display", "none");
+		    }
+		    
+		    d3.select(".theExplainer p").html(selected["description"] ? selected["description"] : null);
 	    }
 	    
   }
 
   entered() {
+  	let accessor = this.display ? "years" : "differences";
+  	let selected = this.selected ? this.selected : "";
     this.group.style("mix-blend-mode", null);
     this.group.selectAll("path")
-    	.attr("stroke", "#ddd")
+    	.attr("stroke", function(d){
+    		if (d["name"] === selected["name"]){
+    			return null;
+    		} else {
+    			return "#ddd";
+    		}
+    	})
     	.attr("stroke-width", null);
-    this.dot.attr("display", null);
+    if (selected !== ""){
+
+    	this.dot.attr("display", "initial");
+		this.dot
+			.attr("transform", "translate(" + this.x(this.parseTime(selected["max"])) + "," + this.y(selected[accessor][selected["max"]]) + ")");
+		this.dot
+			.select("text")
+			.text(selected.name + " - " + (this.display ? this.numFormat(selected[accessor][selected["max"]]) : this.percentFormat(selected[accessor][selected["max"]])));
+	} else {
+		this.dot.attr("display", "none");
+	}
   }
 
   left() {
+  	let accessor = this.display ? "years" : "differences";
+
+  	let selected = this.selected ? this.selected : "";
     this.group.style("mix-blend-mode", "multiply")
     this.group.selectAll("path")
     	.attr("stroke", (d) => this.colours[d.type])
-    	.attr("stroke-width", null);
-    this.dot.attr("display", "none");
-    d3.select(".theExplainer p").html(null);
+    	.attr("stroke-width",  (d) => d["name"] === selected["name"] ? 1 : null);
+    d3.select(".theExplainer p").html(selected["description"] ? selected["description"] : null);
+  	if (selected !== ""){
+  		this.dot.attr("display", "initial");
+		this.dot
+			.attr("transform", "translate(" + this.x(this.parseTime(selected["max"])) + "," + this.y(selected[accessor][selected["max"]]) + ")");
+		this.dot
+			.select("text")
+			.text(selected.name + " - " + (this.display ? this.numFormat(selected[accessor][selected["max"]]) : this.percentFormat(selected[accessor][selected["max"]])));
+	} else {
+		this.dot.attr("display", "none");
+	}
   }
 
 

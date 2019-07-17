@@ -1,33 +1,65 @@
 import data from "./top_names_years.json";
 import chart from "./chart.js";
+import names from "./names.js";
 import {set} from "d3-collection";
 import {select, selectAll} from "d3-selection";
+import './../semantic/dist/semantic.css';
+
+require('./../semantic/dist/components/transition');
+require('./../semantic/dist/components/dropdown');
 import css from './main.scss';
 
+let colours = {
+    	"athlete": "red",
+    	"notable_person": "blue",
+    	"reality_star": "green",
+    	"actor": "orange",
+    	"unknown": "purple",
+    	"music_related": "lime",
+    	"fictional_character": "turquoise"
+    };
 
 //initial values
 let type = "all";
 let subtype = "all";
 let filterData = data["values"];
+let selected = null;
 
 //the type selector never changes
 let possible_types = 
 	set(data.values.map(function(d){ return d.type})).values();
 	possible_types.unshift("all");
 
+
 let select_item = 
-	select("#type")
-		.selectAll("option")
+	select("#type").select(".menu")
+		.selectAll(".item")
 		.data(possible_types, function(d){ return d})
 		.enter()
-		.append("option")
-		.attr("value", function(d){ return d})
-		.html(function(d){ return d.split("_").join(" ").toUpperCase()});
+		.append("div")
+		.attr("data-value", function(d){ return d})
+		.attr("class", "item")
+		.each(function(d){
+			let theThis = select(this);
+			theThis.append("div")
+				.attr("class", "ui empty circular label")
+				.style("background-color", (colours[d] ? colours[d] : "grey"));
+			theThis.append("span").html(function(d){ return d.split("_").join(" ").toUpperCase()});
+		})
 
-select("#type").on("change", updateSubtypes);
+$("#type").dropdown({
+    onChange: updateSubtypes
+});
 
-let myChart = new chart();
+
+let myChart = new chart(colours);
+let myNames = new names(setSelected);
 filterMyData();
+
+function setSelected(name){
+	selected = name;
+	myChart.setSelected(name);
+}
 
 function filterMyData(){
 	if (type === "all"){
@@ -46,28 +78,42 @@ function filterMyData(){
 			
 		})
 	}
+
+	if (selected !== null){
+		let exists = filterData.some(function(d){ return d === selected});
+		setSelected(null);
+	}
 	myChart.drawChart(filterData);
+	myNames.updateList(filterData);
 }
 		
 
 function updateSubtypes(e){
-	type = this.value;
+	type = e;
+	let select_sub_item = 
+			select("#subtype")
+			.select(".menu")
+			.selectAll(".item")
+			.remove();
+
 	if (type === "all" || type === "actor" || type === "unknown"){
 		let possible_subvalues = ["all"];
-
 		let select_sub_item = 
 			select("#subtype")
-				.selectAll("option")
-				.data(possible_subvalues, function(d){ return d});
+			.select(".menu")
+			.selectAll(".item")
+			.data(possible_subvalues, function(d){ return d})
+			.enter()
+			.append("div")
+			.attr("data-value", function(d){ return d})
+			.attr("class", "item")
+			.each(function(d){
+				let theThis = select(this);
+	
+				theThis.append("span").html(function(d){ return d.split("_").join(" ").toUpperCase()});
+			})
 
 		select_sub_item.exit().remove();
-
-
-		select_sub_item
-				.enter()
-				.append("option")
-				.attr("value", function(d){ return d})
-				.html(function(d){ return d.split("_").join(" ").toUpperCase()});
 
 		select("#subtype").property("disabled", true);
 
@@ -81,24 +127,27 @@ function updateSubtypes(e){
 
 		let select_sub_item = 
 			select("#subtype")
-				.selectAll("option")
-				.data(possible_subvalues, function(d){ return d});
-
-		select_sub_item.exit().remove();
-
-		select_sub_item
-				.enter()
-				.append("option")
-				.attr("value", function(d){ return d})
-				.html(function(d){ return d.split("_").join(" ").toUpperCase()});
+			.select(".menu")
+			.selectAll(".item")
+			.data(possible_subvalues, function(d){ return d})
+			.enter()
+			.append("div")
+			.attr("data-value", function(d){ return d})
+			.attr("class", "item")
+			.each(function(d){
+				let theThis = select(this);
+	
+				theThis.append("span").html(function(d){ return d.split("_").join(" ").toUpperCase()});
+			})
 
 		select("#subtype").property("disabled", false);
 
 	}
-	select("#subtype").on("change", function(d){
-		subtype = this.value;
-		filterMyData();
+
+	$("#subtype").dropdown({
+    	onChange: (e) => subtype = e
 	});
+	console.log(subtype);
 	filterMyData();
 
 }

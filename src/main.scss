@@ -1,4 +1,16 @@
+/*
+@import url('https://fonts.googleapis.com/css?family=PT+Mono|PT+Sans&display=swap');
+
 $green:rgba(19,191,17,1);
+$toggleHeight: 15px;
+$toggleWidth: 30px;
+
+html, body {
+  margin: 0 auto;
+  width: 100%;
+  height: 100%;
+  font-family: 'PT Sans', sans-serif;
+}
 
 *,*:before,*:after {
   transition:.25s ease-in-out;
@@ -7,10 +19,10 @@ $green:rgba(19,191,17,1);
 .checkbox-label {
   display:block;
   background:#f3f3f3;
-  height:20px;
-  width:40px;
-  border-radius:20px;
-  margin-left:100px;
+  height: $toggleHeight;
+  width: $toggleWidth;
+  border-radius: $toggleHeight;
+  margin-left:80px;
   position:relative;
   box-shadow:0 0 0 2px #dddddd;
   .on {
@@ -19,8 +31,8 @@ $green:rgba(19,191,17,1);
     z-index:0;
     left:0;
     opacity:1;
-    min-width:100px;
-    line-height:20px;
+    min-width:70px;
+    line-height: calc($toggleHeight + 8px);
     opacity:0;
     color:$green;
   }
@@ -28,11 +40,11 @@ $green:rgba(19,191,17,1);
     display:block;
     position:absolute;
     z-index:0;
-    right:50px;
+    right:40px;
     text-align:right;
     opacity:1;
-    min-width:100px;
-    line-height:20px;
+    min-width:70px;
+    line-height: calc($toggleHeight + 8px);
     opacity:1;
     color:#bbbbbb;
   }
@@ -43,9 +55,9 @@ $green:rgba(19,191,17,1);
     z-index:1;
     top:0;
     left:0;
-    border-radius:20px;
-    height:20px;
-    width:20px;
+    border-radius: $toggleHeight;
+    height: $toggleHeight;
+    width: $toggleHeight;
     background:white;
     box-shadow:0 3px 3px rgba(0,0,0,.2),0 0 0 2px #dddddd;
   }
@@ -59,7 +71,7 @@ $green:rgba(19,191,17,1);
       background:$green;
       box-shadow:0 0 0 2px $green;
       .on {
-        left:50px;
+        left:40px;
         opacity:1;
       }
       .off {
@@ -73,3 +85,122 @@ $green:rgba(19,191,17,1);
     }
   }
 }
+
+.holder {
+  width: 100%;
+  max-width: 900px;
+  height: 100%;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 0.5fr;
+  grid-template-rows: 1fr 6fr 2fr;
+  grid-template-areas: 
+    "selectors selectors checkboxes checkboxes checkboxes"
+    "grid grid grid grid names"
+    "des des des des des";
+}
+
+.selectors {
+  grid-area: selectors;
+}
+
+.checkboxes {
+  grid-area: checkboxes;
+  text-align: right;
+}
+
+.svgHolder {
+  width: 100%;
+  height: 100%;
+  grid-area: grid;
+}
+
+.svgHolder svg {
+  font-family: "PT Mono";
+}
+
+.names {
+  grid-area: names;
+}
+
+.theExplainer {
+  grid-area: des;
+}
+
+.toggle {
+  display: inline-block;
+}
+
+.names {
+  overflow: auto;
+}
+
+
+.name {
+  p {
+    margin: 0.5em 0em 0.5em 0.5em;
+    font-weight: normal;
+    cursor: pointer;
+  }
+
+  p:hover, &.selected {
+    text-decoration: underline;
+  }
+
+  &.selected {
+    font-style: italic;
+  }
+
+  &.athlete {
+     p::before {
+        background-color: red;
+     }
+  }
+
+  &.notable_person {
+     p::before {
+        background-color: blue;
+     }
+  }
+
+  &.reality_star {
+     p::before {
+        background-color: green;
+     }
+  }
+
+  &.actor {
+     p::before {
+        background-color: orange;
+     }
+  }
+
+  &.unknown {
+     p::before {
+        background-color: purple;
+     }
+  }
+
+  &.music_related {
+     p::before {
+        background-color: lime;
+     }
+  }
+
+  &.fictional_character {
+     p::before {
+        background-color: turquoise;
+     }
+  }
+
+  p::before {
+    content:" ";
+    width: 15px;
+    height: 15px;
+    border-radius: 7.5px;
+    display: inline-block;
+    margin-left: -0.5em;
+    margin-right: 0.5em;
+  }
+}
+*/

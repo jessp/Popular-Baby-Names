@@ -12,9 +12,14 @@
   "license": "ISC",
   "dependencies": {
     "d3": "^5.9.7",
+    "file-loader": "^4.0.0",
+    "fomantic-ui": "^2.7.6",
+    "jquery": "^3.4.1",
+    "url-loader": "^2.0.1",
     "webpack-dev-server": "^3.7.2"
   },
   "devDependencies": {
+    "gulp": "^4.0.2",
     "node-sass": "^4.12.0",
     "sass-loader": "^7.1.0",
     "webpack": "^4.35.2",
