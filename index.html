@@ -4,28 +4,65 @@
 	<title>Hyper Trendy Names Since 1950</title>
 </head>
 <body>
-	<div>
-		<div class = "selectors">
-			<select id="type"></select>
-			<select id="subtype" disabled>
-				<option value="all">ALL</option>
-			</select>
-		</div>
-		<div class = "checkboxes">
-			<input type="checkbox" id="trend" name="trend" checked>
-			<label for="trend">Peak Trend</label>
-			<input type="checkbox" id="highest" name="highest" checked>
-			<label for="highest">Overall Peak</label>
-		</div>
-		<input class="checkbox" id="checkbox" type="checkbox"/>
-		<label for="checkbox" class="checkbox-label">
-		  <span class="on"># Babies</span>
-		  <span class="off">Trendiness</span>
-		</label>
+	<div class = "ui container">
+		<div class = "ui top attached menu">
+			<div class="ui item dropdown" id="type">
+				<div class="text">Type</div>
+  				<i class="dropdown icon"></i>
+				<div class="menu">
+					<div class="header">
+				      Type
+				    </div>
+				    <div class="divider"></div>
+			
+				</div>
+			</div>
+			<div class="ui item dropdown" id="subtype">
+				<div class="text">Subtype</div>
+  				<i class="dropdown icon"></i>
+				<div class="menu">
+					<div class="header">
+				      Subtype
+				    </div>
+				    <div class="divider"></div>
+			
+				</div>
+			</div>
+			<div class="ui item">
 
-		<svg id="theSvg" width="500px" height="300px"></svg>
-		<div class = "theExplainer">
-			<p></p>
+<!-- 				<div class = "selectors">
+					<select id="type"></select>
+					<select id="subtype" disabled>
+						<option value="all">ALL</option>
+					</select>
+				</div> -->
+				<div class = "checkboxes">
+					<input type="checkbox" id="trend" name="trend" checked>
+					<label for="trend">Trend Peak</label>
+					<input type="checkbox" id="highest" name="highest" checked>
+					<label for="highest">Overall Peak</label>
+					<div class = "toggle">
+						<input class="checkbox" id="checkbox" type="checkbox"/>
+						<label for="checkbox" class="checkbox-label">
+						  <span class="on">% Change</span>
+						  <span class="off"># Babies</span>
+						</label>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class = "holder ui grid">
+			<div class = "row ui">
+				<div class = "svgHolder thirteen wide column ui">
+					<svg id="theSvg"></svg>
+				</div>
+				<div class="names three wide column ui" style="max-height: 500px; overflow: hidden"></div>
+			</div>
+			<div class = "row ui">
+				<div class = "theExplainer column">
+					<p></p>
+				</div>
+			</div>
 		</div>
 	</div>
 	<script src="main.js"></script>
