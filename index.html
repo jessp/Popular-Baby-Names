@@ -1,67 +1,87 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Hyper Trendy Names Since 1950</title>
+	<title>Ultra Trendy Names Since 1950</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-	<div class = "ui container">
-		<div class = "ui top attached menu">
+	<div class = "ui container" id="mainHolder">
+		<h1 class="ui header">Ultra Trendy Names Since 1950</h1>
+		<div class = "ui mini menu">
 			<div class="ui item dropdown" id="type">
 				<div class="text">Type</div>
   				<i class="dropdown icon"></i>
 				<div class="menu">
-					<div class="header">
-				      Type
-				    </div>
+					<div class="header">Type</div>
 				    <div class="divider"></div>
 			
 				</div>
 			</div>
-			<div class="ui item dropdown" id="subtype">
+			<div class="ui item dropdown disabled" id="subtype">
 				<div class="text">Subtype</div>
   				<i class="dropdown icon"></i>
 				<div class="menu">
-					<div class="header">
-				      Subtype
-				    </div>
+					<div class="header">Subtype</div>
 				    <div class="divider"></div>
 			
 				</div>
 			</div>
-			<div class="ui item">
-
-<!-- 				<div class = "selectors">
-					<select id="type"></select>
-					<select id="subtype" disabled>
-						<option value="all">ALL</option>
-					</select>
-				</div> -->
-				<div class = "checkboxes">
-					<input type="checkbox" id="trend" name="trend" checked>
-					<label for="trend">Trend Peak</label>
-					<input type="checkbox" id="highest" name="highest" checked>
-					<label for="highest">Overall Peak</label>
-					<div class = "toggle">
-						<input class="checkbox" id="checkbox" type="checkbox"/>
-						<label for="checkbox" class="checkbox-label">
-						  <span class="on">% Change</span>
-						  <span class="off"># Babies</span>
-						</label>
+			<div class="ui item active" id="trend">
+				<img src="./star.svg">
+				<span class="hideOnMini">
+					Trend
+					<span class="hideOnSmall">&nbsp;Peak</span>
+				</span>
+			</div>
+			<div class="ui item active" id="highest">
+				<img src="./cross.svg">
+				<span class="hideOnMini">
+					Overall
+					<span class="hideOnSmall">&nbsp;Peak</span>
+				</span>
+			</div>
+			<div class="right mini menu">
+				<div class="ui item hideOnSmall">
+					<div class="ui mini buttons">
+					  <button class="ui button" id="percChange">% Change
+					  </button>
+					  <div class="or"></div>
+					  <button class="ui mini button active" id="numBabies"># Babies
+					  </button>
+					</div>
+				</div>
+				<div class="ui item showOnSmall">
+					<div class="ui dropdown" id="scaleType">
+						<div class="text">Scale Type</div>
+		  				<i class="dropdown icon"></i>
+						<div class="menu">
+							<div class="header">Scale Type</div>
+						    <div class="divider"></div>
+						    <div class="item" data-value="numBabies">
+								# Babies
+						    </div>
+						    <div class="item" data-value="percChange">
+								% Change
+						    </div>
+					
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 		<div class = "holder ui grid">
 			<div class = "row ui">
-				<div class = "svgHolder thirteen wide column ui">
+				<div class = "svgHolder eleven wide computer eleven wide tablet ten wide mobile column ui">
 					<svg id="theSvg"></svg>
 				</div>
-				<div class="names three wide column ui" style="max-height: 500px; overflow: hidden"></div>
+				<div class="names five wide computer five wide tablet six wide mobile column ui relaxed divided list"></div>
 			</div>
-			<div class = "row ui">
-				<div class = "theExplainer column">
-					<p></p>
-				</div>
+		</div>
+		<div class = "ui segment">
+			<div class = "theExplainer">
+				<h3 class="ui header">Explanation</h3>
+				<p class="placeholder">Click on names in the right side of the screen of hover over the chart to see possible reasons why certain baby names became popular.</p>
+				<p class="info"></p>
 			</div>
 		</div>
 	</div>
