@@ -53,7 +53,7 @@ $("#type").dropdown({
 
 
 let myChart = new chart(colours);
-let myNames = new names(setSelected);
+let myNames = new names(setSelected, colours);
 filterMyData();
 
 function setSelected(name){

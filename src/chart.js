@@ -11,7 +11,7 @@ class Chart {
   	this.numFormat = d3.format(",");
   	this.percentFormat = d3.format(",.0%");
   	this.selected = null;
-  	this.margin = ({top: 20, right: 20, bottom: 30, left: 50});
+  	this.margin = ({top: 20, right: 20, bottom: 20, left: 50});
     this.svg = 
     	d3.select("#theSvg")
     		.attr("viewBox", [0, 0, this.width, this.height]);
@@ -68,14 +68,16 @@ class Chart {
     this.yAxis = this.svg.append("g").attr("class", "yAxis")
 	    .attr("transform", "translate(" + this.margin.left + ",0)");
 
-	d3.select("#trend").on("change", function(d){
-		let isChecked = d3.select(this).property("checked");
-		d3.select(".trendGroup").style("opacity", isChecked ? 1 : 0);
+	d3.select("#trend").on("click", function(d){
+		let isChecked = d3.select(this).classed("active");
+		d3.select(".trendGroup").style("opacity", isChecked ? 0 : 1);
+		d3.select(this).classed("active", !isChecked);
 	});
 
-	d3.select("#highest").on("change", function(d){
-		let isChecked = d3.select(this).property("checked");
-		d3.select(".peakGroup").style("opacity", isChecked ? 1 : 0);
+	d3.select("#highest").on("click", function(d){
+		let isChecked = d3.select(this).classed("active");
+		d3.select(".peakGroup").style("opacity", isChecked ? 0 : 1);
+		d3.select(this).classed("active", !isChecked);
 	});
 
 	let setDisplay = (e) => this.display = e;
@@ -194,8 +196,9 @@ class Chart {
 	this.drawSymbols("peak");
 	this.drawSymbols("trend");
 
-	d3.select(".theExplainer p")
+	d3.select(".theExplainer .info")
 		.html(selected["description"] ? selected["description"] : null);
+	d3.select(".theExplainer .placeholder").classed("hidden", selected["description"] ? true : false);
 
 	if (selected !== ""){
   		this.dot.attr("display", "initial");
@@ -337,7 +340,8 @@ class Chart {
 		    this.dot
 		    	.select("text")
 		    	.text(s.name + " - " + (this.display ? this.numFormat(s[accessor][newI]) : this.percentFormat(s[accessor][newI])));
-	    	d3.select(".theExplainer p").html(s.description);
+	    	d3.select(".theExplainer .placeholder").classed("hidden", true);
+	    	d3.select(".theExplainer .info").html(s.description);
 	    } else {
 	    	this.group.style("mix-blend-mode", "multiply")
 		    this.group.selectAll("path")
@@ -354,7 +358,8 @@ class Chart {
 		    	this.dot.attr("display", "none");
 		    }
 		    
-		    d3.select(".theExplainer p").html(selected["description"] ? selected["description"] : null);
+		    d3.select(".theExplainer .placeholder").classed("hidden", selected["description"] ? true : false);
+		    d3.select(".theExplainer .info").html(selected["description"] ? selected["description"] : null);
 	    }
 	    
   }
@@ -393,7 +398,8 @@ class Chart {
     this.group.selectAll("path")
     	.attr("stroke", (d) => this.colours[d.type])
     	.attr("stroke-width",  (d) => d["name"] === selected["name"] ? 1 : null);
-    d3.select(".theExplainer p").html(selected["description"] ? selected["description"] : null);
+    d3.select(".theExplainer .info").html(selected["description"] ? selected["description"] : null);
+    d3.select(".theExplainer .placeholder").classed("hidden", selected["description"] ? true : false);
   	if (selected !== ""){
   		this.dot.attr("display", "initial");
 		this.dot

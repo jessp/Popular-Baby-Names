@@ -1,206 +1,95 @@
-/*
-@import url('https://fonts.googleapis.com/css?family=PT+Mono|PT+Sans&display=swap');
-
-$green:rgba(19,191,17,1);
-$toggleHeight: 15px;
-$toggleWidth: 30px;
-
 html, body {
-  margin: 0 auto;
   width: 100%;
   height: 100%;
-  font-family: 'PT Sans', sans-serif;
+  position: relative;
+  margin: 0px;
+  padding: 0px;
+  overflow: hidden;
 }
 
-*,*:before,*:after {
-  transition:.25s ease-in-out;
-}
-
-.checkbox-label {
-  display:block;
-  background:#f3f3f3;
-  height: $toggleHeight;
-  width: $toggleWidth;
-  border-radius: $toggleHeight;
-  margin-left:80px;
-  position:relative;
-  box-shadow:0 0 0 2px #dddddd;
-  .on {
-    display:block;
-    position:absolute;
-    z-index:0;
-    left:0;
-    opacity:1;
-    min-width:70px;
-    line-height: calc($toggleHeight + 8px);
-    opacity:0;
-    color:$green;
-  }
-  .off {
-    display:block;
-    position:absolute;
-    z-index:0;
-    right:40px;
-    text-align:right;
-    opacity:1;
-    min-width:70px;
-    line-height: calc($toggleHeight + 8px);
-    opacity:1;
-    color:#bbbbbb;
-  }
-  &:before {
-    content:'';
-    display:block;
-    position:absolute;
-    z-index:1;
-    top:0;
-    left:0;
-    border-radius: $toggleHeight;
-    height: $toggleHeight;
-    width: $toggleHeight;
-    background:white;
-    box-shadow:0 3px 3px rgba(0,0,0,.2),0 0 0 2px #dddddd;
-  }
-}
-
-.checkbox {
-  position:absolute;
-  left:-5000px;
-  &:checked {
-    + .checkbox-label {
-      background:$green;
-      box-shadow:0 0 0 2px $green;
-      .on {
-        left:40px;
-        opacity:1;
-      }
-      .off {
-        right:0px;
-        opacity:0;
-      }
-      &:before {
-        left:20px;
-        box-shadow:0 3px 3px rgba(0,0,0,.2),0 0 0 2px $green;
-      }
-    }
-  }
+#mainHolder {
+  height: 90%;
+  position: relative;
+  margin-top: 2em;
 }
 
 .holder {
-  width: 100%;
-  max-width: 900px;
+  margin-top: 2em;
+  height: 70%;
+  position: relative;
+
+  svg {
+    overflow: visible;
+  }
+}
+
+.holder > .row {
   height: 100%;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 0.5fr;
-  grid-template-rows: 1fr 6fr 2fr;
-  grid-template-areas: 
-    "selectors selectors checkboxes checkboxes checkboxes"
-    "grid grid grid grid names"
-    "des des des des des";
-}
-
-.selectors {
-  grid-area: selectors;
-}
-
-.checkboxes {
-  grid-area: checkboxes;
-  text-align: right;
-}
-
-.svgHolder {
-  width: 100%;
-  height: 100%;
-  grid-area: grid;
-}
-
-.svgHolder svg {
-  font-family: "PT Mono";
-}
-
-.names {
-  grid-area: names;
-}
-
-.theExplainer {
-  grid-area: des;
-}
-
-.toggle {
-  display: inline-block;
+  overflow: hidden;
+  position: relative;
 }
 
 .names {
   overflow: auto;
+  max-height: 100%;
 }
 
-
-.name {
-  p {
-    margin: 0.5em 0em 0.5em 0.5em;
-    font-weight: normal;
-    cursor: pointer;
-  }
-
-  p:hover, &.selected {
-    text-decoration: underline;
-  }
-
-  &.selected {
-    font-style: italic;
-  }
-
-  &.athlete {
-     p::before {
-        background-color: red;
-     }
-  }
-
-  &.notable_person {
-     p::before {
-        background-color: blue;
-     }
-  }
-
-  &.reality_star {
-     p::before {
-        background-color: green;
-     }
-  }
-
-  &.actor {
-     p::before {
-        background-color: orange;
-     }
-  }
-
-  &.unknown {
-     p::before {
-        background-color: purple;
-     }
-  }
-
-  &.music_related {
-     p::before {
-        background-color: lime;
-     }
-  }
-
-  &.fictional_character {
-     p::before {
-        background-color: turquoise;
-     }
-  }
-
-  p::before {
-    content:" ";
-    width: 15px;
-    height: 15px;
-    border-radius: 7.5px;
-    display: inline-block;
-    margin-left: -0.5em;
-    margin-right: 0.5em;
-  }
+.names .item {
+  cursor: pointer;
 }
-*/
+
+.ui.grid > .secondary.row, .ui.grid > .secondary.column, .ui.grid > .row > .secondary.column {
+  background-color: unset;
+}
+
+.ui.menu .item {
+  padding: 0.375em 0.65em;
+  cursor: pointer;
+}
+
+.placeholder {
+  font-style: italic;
+}
+
+.hidden {
+  display: none;
+}
+
+.selected {
+  font-style: italic;
+}
+
+.showOnSmall {
+  display: none !important;
+}
+
+@media only screen 
+  and (max-width: 568px) 
+  and (max-device-width: 568px) {
+
+    .hideOnSmall {
+      display: none !important;
+    }
+
+    .holder {
+      height: 50%;
+    }
+
+    .ui.list.names {
+      font-size: 0.8em;
+      line-height: 1.1em;
+    }
+
+    .showOnSmall {
+      display: initial;
+    }
+
+  }
+
+@media only screen 
+  and (max-width: 350px) 
+  and (max-device-width: 350px) {
+    .hideOnMini {
+      display: none;
+    }
+  }
