@@ -30,8 +30,12 @@ let possible_types =
 	set(data.values.map(function(d){ return d.type})).values();
 	possible_types.unshift("all");
 
+let myChart;
+let myNames;
 
-let select_item = 
+window.onload = (event) => {
+
+	let select_item = 
 	select("#type").select(".menu")
 		.selectAll(".item")
 		.data(possible_types, function(d){ return d})
@@ -47,14 +51,15 @@ let select_item =
 			theThis.append("span").html(function(d){ return d.split("_").join(" ").toUpperCase()});
 		})
 
-$("#type").dropdown({
-    onChange: updateSubtypes
-});
+	$("#type").dropdown({
+	    onChange: updateSubtypes
+	});
 
+	myChart = new chart(colours);
+	myNames = new names(setSelected, colours);
+	filterMyData();
+};
 
-let myChart = new chart(colours);
-let myNames = new names(setSelected, colours);
-filterMyData();
 
 function setSelected(name){
 	selected = name;

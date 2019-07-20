@@ -39,6 +39,8 @@ class Names {
   			if (selected === d){
   				selected = null;
 	  			d3.selectAll(".selected").classed("selected", false);
+          d3.select("i.close").classed("circle", true);
+          d3.select("i.close").classed("close", false);
 	  			d3.select(this).classed("selected", false);
           d3.select(this).select("i").classed("circle", true);
           d3.select(this).select("i").classed("close", false);
@@ -47,6 +49,8 @@ class Names {
   			} else {
   				selected = d;
 	  			d3.selectAll(".selected").classed("selected", false);
+          d3.select("i.close").classed("circle", true);
+          d3.select("i.close").classed("close", false);
 	  			d3.select(this).classed("selected", true);
           d3.select(this).select("i").classed("circle", false);
           d3.select(this).select("i").classed("close", true);

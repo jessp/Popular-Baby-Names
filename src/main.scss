@@ -23,6 +23,10 @@ html, body {
   }
 }
 
+.svgHolder {
+  height: 100%;
+}
+
 .holder > .row {
   height: 100%;
   overflow: hidden;
@@ -55,7 +59,7 @@ html, body {
   display: none;
 }
 
-.selected {
+.names .selected {
   font-style: italic;
 }
 
@@ -64,8 +68,8 @@ html, body {
 }
 
 @media only screen 
-  and (max-width: 568px) 
-  and (max-device-width: 568px) {
+  and (max-width: 568px),
+  (max-device-width: 568px) {
 
     .hideOnSmall {
       display: none !important;
@@ -81,14 +85,16 @@ html, body {
     }
 
     .showOnSmall {
-      display: initial;
+        display: -webkit-box !important;
+        display: -ms-flexbox !important;
+        display: flex !important;
     }
 
   }
 
 @media only screen 
-  and (max-width: 350px) 
-  and (max-device-width: 350px) {
+  and (max-width: 350px),
+  (max-device-width: 350px) {
     .hideOnMini {
       display: none;
     }
