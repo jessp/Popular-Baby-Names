@@ -13,6 +13,10 @@ html, body {
   margin-top: 2em;
 }
 
+.showOnMini {
+  display: none !important;
+}
+
 .holder {
   margin-top: 2em;
   height: 70%;
@@ -96,6 +100,12 @@ html, body {
   and (max-width: 500px),
   (max-device-width: 500px) {
     .hideOnMini {
-      display: none;
+      display: none !important;
+    }
+
+    .showOnMini {
+        display: -webkit-box !important;
+        display: -ms-flexbox !important;
+        display: flex !important;
     }
   }

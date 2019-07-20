@@ -72,13 +72,13 @@ class Chart {
 		this.yAxis = this.svg.append("g").attr("class", "yAxis")
 		.attr("transform", "translate(" + this.margin.left + ",0)");
 
-		d3.select("#trend").on("click", function(d){
+		d3.selectAll(".trend").on("click", function(d){
 			let isChecked = d3.select(this).classed("active");
 			d3.select(".trendGroup").style("opacity", isChecked ? 0 : 1);
 			d3.select(this).classed("active", !isChecked);
 		});
 
-		d3.select("#highest").on("click", function(d){
+		d3.selectAll(".highest").on("click", function(d){
 			let isChecked = d3.select(this).classed("active");
 			d3.select(".peakGroup").style("opacity", isChecked ? 0 : 1);
 			d3.select(this).classed("active", !isChecked);

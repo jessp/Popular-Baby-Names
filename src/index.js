@@ -7,6 +7,7 @@ import './../semantic/dist/semantic.css';
 
 require('./../semantic/dist/components/transition');
 require('./../semantic/dist/components/dropdown');
+require('./../semantic/dist/components/popup');
 import css from './main.scss';
 
 let colours = {
@@ -54,6 +55,12 @@ window.onload = (event) => {
 	$("#type").dropdown({
 	    onChange: updateSubtypes
 	});
+
+	$('.trend.showOnMini')
+	  .popup();
+
+	$('.highest.showOnMini')
+	  .popup();
 
 	myChart = new chart(colours);
 	myNames = new names(setSelected, colours);
