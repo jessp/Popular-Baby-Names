@@ -17,7 +17,8 @@ let colours = {
     	"actor": "orange",
     	"unknown": "purple",
     	"music_related": "lime",
-    	"fictional_character": "turquoise"
+    	"fictional_character": "turquoise",
+    	"other": "grey"
     };
 
 //initial values
