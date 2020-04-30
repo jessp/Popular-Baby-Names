@@ -16,7 +16,7 @@
     "diff": ">=3.5.0",
     "file-loader": "^4.0.0",
     "fomantic-ui": "^2.7.6",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "lodash.template": ">=4.5.0",
     "style-loader": "^0.23.1",
     "url-loader": "^2.0.1",
